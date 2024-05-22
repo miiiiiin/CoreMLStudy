@@ -10,6 +10,53 @@ import UIKit
 import Vision
 
 extension ViewController {
+    
+    var detectionBarcodeRequest: VNDetectBarcodesRequest {
+        let request = VNDetectBarcodesRequest { request, error in
+            if let detectError = error {
+                debugPrint(detectError)
+                return
+            } else {
+                guard let observations = request.results as? [VNDetectedObjectObservation] else { return }
+                print(observations)
+                self.visualizedObservations(observations)
+            }
+        }
+        
+        return request
+    }
+    
+    var detectionFaceRequest: VNDetectFaceRectanglesRequest {
+        let request = VNDetectFaceRectanglesRequest { request, error in
+            if let detectError = error {
+                debugPrint(detectError)
+                return
+            } else {
+                guard let observations = request.results as? [VNDetectedObjectObservation] else { return }
+                print(observations)
+                self.visualizedObservations(observations)
+            }
+        }
+        
+        return request
+    }
+    
+    var detectionTextRequest: VNDetectTextRectanglesRequest {
+        let request = VNDetectTextRectanglesRequest { request, error in
+            if let detectError = error {
+                debugPrint(detectError)
+                return
+            } else {
+                guard let observations = request.results as? [VNDetectedObjectObservation] else { return }
+                print(observations)
+                self.visualizedObservations(observations)
+            }
+        }
+        request.reportCharacterBoxes = true
+        
+        return request
+    }
+    
     var detectionRequest: VNDetectRectanglesRequest {
         let request = VNDetectRectanglesRequest { request, error in
             if let detectError = error {
@@ -33,7 +80,7 @@ extension ViewController {
         guard let cgImage = image.cgImage else { return }
         let imageRequestHandler = VNImageRequestHandler(cgImage: cgImage, orientation: image.cgOrientation, options: [:])
         
-        let requests = [detectionRequest]
+        let requests = [detectionRequest, detectionTextRequest, detectionFaceRequest, detectionBarcodeRequest]
         
         DispatchQueue.global(qos: .userInitiated).async {
             do {
